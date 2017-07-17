@@ -1,4 +1,4 @@
-module ModularScale exposing (Config, Interval, get, getEm)
+module ModularScale exposing (Config, Interval(..), get, getEm)
 
 
 type alias Config =
