@@ -1,8 +1,8 @@
 {
-  "version": "0.0.1",
-  "summary": "Modular scale generator",
+  "version": "1.0.0",
+  "summary": "Generate a value based on a modular scale",
   "repository": "https://github.com/rl-king/elm-modular-scale.git",
-  "license": "GNU3",
+  "license": "BSD3",
   "source-directories": ["src"],
   "exposed-modules": ["ModularScale"],
   "dependencies": {
