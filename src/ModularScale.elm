@@ -51,11 +51,18 @@ type alias Config =
 -}
 get : Config -> Int -> Float
 get { base, interval } index =
-    base
-        |> List.map (\x -> List.map (\y -> toFloat x * getEm interval y) (List.range 0 index))
-        |> List.concat
-        |> List.sort
-        |> getIndex index
+    if List.length base == 1 then
+        base
+            |> List.head
+            |> Maybe.withDefault 0
+            |> toFloat
+            |> (*) (getEm interval index)
+    else
+        base
+            |> List.map (\x -> List.map (\y -> toFloat x * getEm interval y) (List.range 0 index))
+            |> List.concat
+            |> List.sort
+            |> getIndex index
 
 
 getIndex : Int -> List Float -> Float
