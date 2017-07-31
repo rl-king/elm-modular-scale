@@ -61,7 +61,7 @@ get { base, interval } index =
 
 getRecursive : Int -> Float -> List Float -> Float
 getRecursive index interval base =
-    if index == -1 then
+    if index == 0 then
         base
             |> List.minimum
             |> Maybe.withDefault 0
