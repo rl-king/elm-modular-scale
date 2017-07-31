@@ -1,6 +1,6 @@
 module Benchmarks exposing (..)
 
-import Benchmark exposing (Benchmark, benchmark1, benchmark2, benchmark3, describe)
+import Benchmark exposing (Benchmark, benchmark2, describe)
 import Benchmark.Runner exposing (BenchmarkProgram, program)
 import ModularScale
 
@@ -33,9 +33,11 @@ config3 =
 
 suite : Benchmark
 suite =
-    describe "ModularScale Benchmark)"
-        [ benchmark2 "getEm" ModularScale.getEm ModularScale.PerfectFifth 2
-        , benchmark2 "Get 1 base index 5" ModularScale.get config 5
-        , benchmark2 "Get 2 bases index 5" ModularScale.get config2 5
-        , benchmark2 "Get 3 bases index 5" ModularScale.get config3 5
+    describe "ModularScale get Benchmark"
+        [ benchmark2 "Get with 1 base at index 5" ModularScale.get config 5
+        , benchmark2 "Get with 1 base at index 50" ModularScale.get config 50
+        , benchmark2 "Get with 2 bases at index 5" ModularScale.get config2 5
+        , benchmark2 "Get with 2 bases at index 50" ModularScale.get config2 50
+        , benchmark2 "Get with 3 bases at index 5" ModularScale.get config3 5
+        , benchmark2 "Get with 3 bases at index 50" ModularScale.get config3 50
         ]
