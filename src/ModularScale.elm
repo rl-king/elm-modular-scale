@@ -70,20 +70,20 @@ getRecursive index interval base =
             indexIsNegative =
                 index < 0
 
-            min =
-                base
-                    |> List.minimum
-                    |> Maybe.withDefault 0
-
-            max =
-                base
-                    |> List.maximum
-                    |> Maybe.withDefault 0
+            target =
+                if indexIsNegative then
+                    base
+                        |> List.maximum
+                        |> Maybe.withDefault 0
+                else
+                    base
+                        |> List.minimum
+                        |> Maybe.withDefault 0
 
             applyScale x =
-                if x == max && indexIsNegative then
+                if x == target && indexIsNegative then
                     x / interval
-                else if x == min && not indexIsNegative then
+                else if x == target then
                     x * interval
                 else
                     x

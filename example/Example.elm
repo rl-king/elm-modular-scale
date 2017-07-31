@@ -25,7 +25,7 @@ model : Model
 model =
     Model "Elm Modular Scale"
         "Usable values derived from musical intervals"
-        "This tool will help you create balanced font size combinations and is also great for margins, padding, line-height."
+        "A tool that will help you create proportionally related values to be used as font sizes, element widths, line height, ect. "
 
 
 config : ModularScale.Config
@@ -42,15 +42,16 @@ ms x =
 
 modularScaleList : Int -> List ( Int, String )
 modularScaleList length =
-    List.map (\x -> ( x, ms x )) (List.range -10 length)
+    List.map (\x -> ( x, ms x )) (List.range 0 length)
 
 
 view : Model -> Html msg
 view model =
     div
         [ style
-            [ ( "background-color", "#eee" )
-            , ( "width", ms 15 )
+            [ ( "background-color", "#f0f0f0" )
+            , ( "font-family", "Helvetica, Arial, sans-serif" )
+            , ( "width", ms 20 )
             , ( "margin", ms 3 ++ " auto" )
             , ( "padding", ms 1 ++ " " ++ ms 4 )
             ]
@@ -59,12 +60,10 @@ view model =
         , h2 [ style [ ( "font-size", ms 2 ) ] ] [ text model.subtitle ]
         , p [ style [ ( "font-size", ms 1 ) ] ] [ text model.body ]
         , strong [ style [ ( "font-size", ms 1 ) ] ] [ text "A sample of values being generated" ]
-        , dl [ style [ ( "font-size", ms 1 ) ] ] <| List.concat <| List.map modularScaleValue <| modularScaleList 20
+        , ul [ style [ ( "font-size", ms 1 ) ] ] <| List.map modularScaleValue <| modularScaleList 20
         ]
 
 
-modularScaleValue : ( Int, String ) -> List (Html msg)
+modularScaleValue : ( Int, String ) -> Html msg
 modularScaleValue ( index, size ) =
-    [ dt [] [ text <| "Index " ++ toString index ]
-    , dd [] [ text <| toString size ]
-    ]
+    li [] [ text ("Index " ++ toString index ++ " : " ++ size) ]
