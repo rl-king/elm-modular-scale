@@ -37,7 +37,7 @@ type alias Config =
     }
 
 
-{-| Return the value at a modular scale index multiplied by the base.
+{-| Return the value at an index of the scale based on the provided base(s).
 
     config =
         { base = [ 1 ]
