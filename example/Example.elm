@@ -42,7 +42,7 @@ ms x =
 
 modularScaleList : Int -> List ( Int, String )
 modularScaleList length =
-    List.map (\x -> ( x, ms x )) (List.range 0 length)
+    List.map (\x -> ( x, ms x )) (List.range -10 length)
 
 
 view : Model -> Html msg
@@ -59,7 +59,7 @@ view model =
         , h2 [ style [ ( "font-size", ms 2 ) ] ] [ text model.subtitle ]
         , p [ style [ ( "font-size", ms 1 ) ] ] [ text model.body ]
         , strong [ style [ ( "font-size", ms 1 ) ] ] [ text "A sample of values being generated" ]
-        , dl [ style [ ( "font-size", ms 1 ) ] ] <| List.concat <| List.map modularScaleValue <| modularScaleList 12
+        , dl [ style [ ( "font-size", ms 1 ) ] ] <| List.concat <| List.map modularScaleValue <| modularScaleList 20
         ]
 
 

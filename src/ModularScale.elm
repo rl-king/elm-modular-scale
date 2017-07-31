@@ -67,21 +67,37 @@ getRecursive index interval base =
             |> Maybe.withDefault 0
     else
         let
+            indexIsNegative =
+                index < 0
+
             min =
                 base
                     |> List.minimum
                     |> Maybe.withDefault 0
 
+            max =
+                base
+                    |> List.maximum
+                    |> Maybe.withDefault 0
+
             applyScale x =
-                if x == min then
+                if x == max && indexIsNegative then
+                    x / interval
+                else if x == min && not indexIsNegative then
                     x * interval
                 else
                     x
 
+            indexDirection x =
+                if indexIsNegative then
+                    x + 1
+                else
+                    x - 1
+
             updatedBase =
                 List.map applyScale base
         in
-        getRecursive (index - 1) interval updatedBase
+        getRecursive (indexDirection index) interval updatedBase
 
 
 {-| Get the multiplication factor at a given index of the scale
