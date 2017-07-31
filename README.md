@@ -22,6 +22,6 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 
     h1 [ style [ ( "font-size", ms 4 ) ] ][ text "Foo" ]
 
-Check the <a href="http://package.elm-lang.org/packages/rl-king/elm-modular-scale/1.0.0/ModularScale">docs</a> for information
+Check the <a href="http://package.elm-lang.org/packages/rl-king/elm-modular-scale/latest/ModularScale">docs</a> for more information.
 
 Also check out <a href="https://vimeo.com/17079380" target="blank">this</a> great talk by Tim Brown, introducing this concept.
