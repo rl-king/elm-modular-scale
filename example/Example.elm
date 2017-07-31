@@ -30,14 +30,14 @@ model =
 
 config : ModularScale.Config
 config =
-    { base = [ 12, 17 ]
+    { base = [ 1, 1.2 ]
     , interval = PerfectFifth
     }
 
 
 ms : Int -> String
 ms x =
-    toString (ModularScale.get config x) ++ "px"
+    toString (get config x) ++ "em"
 
 
 modularScaleList : Int -> List ( Int, String )
@@ -51,15 +51,16 @@ view model =
         [ style
             [ ( "background-color", "#f0f0f0" )
             , ( "font-family", "Helvetica, Arial, sans-serif" )
-            , ( "width", ms 20 )
+            , ( "width", ms 16 )
             , ( "margin", ms 3 ++ " auto" )
             , ( "padding", ms 1 ++ " " ++ ms 4 )
+            , ( "line-height", ms 3 )
             ]
         ]
         [ h1 [ style [ ( "font-size", ms 4 ) ] ] [ text model.title ]
-        , h2 [ style [ ( "font-size", ms 2 ) ] ] [ text model.subtitle ]
+        , h2 [ style [ ( "font-size", ms 3 ) ] ] [ text model.subtitle ]
         , p [ style [ ( "font-size", ms 1 ) ] ] [ text model.body ]
-        , strong [ style [ ( "font-size", ms 1 ) ] ] [ text "A sample of values being generated" ]
+        , h3 [ style [ ( "font-size", ms 2 ) ] ] [ text "A sample of values being generated" ]
         , ul [ style [ ( "font-size", ms 1 ) ] ] <| List.map modularScaleValue <| modularScaleList 20
         ]
 

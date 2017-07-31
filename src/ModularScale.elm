@@ -1,8 +1,8 @@
-module ModularScale exposing (Config, Interval(..), get, getEm)
+module ModularScale exposing (Config, Interval(..), get)
 
-{-| A library for generating numerical values derived from musical intervals. With these you'll be able to easily create proportionally related font-sizes, line-height, element dimensions.
+{-| A library for generating numerical values derived from musical intervals. This will get you proportionally related font-sizes, line-height, element dimensions, ect.
 
-Based on the idea found at <a target="_blank" href="http://www.modularscale.com/">modularscale.com</a>
+Based on the idea found at <a target="_blank" href="http://www.modularscale.com/">modularscale.com</a>.
 
 
 # Configuration
@@ -14,8 +14,6 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 
 @docs get
 
-@docs getEm
-
 
 # Interval or custom ratio
 
@@ -24,39 +22,54 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 -}
 
 
-{-| Create the `config` for your scale. I recommend not using more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values will get too narrow.
+{-| Create the `config` for your scale. I recommend not using more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values might get too narrow.
 
-    config : ModularScale.Config
+    config : Config
     config =
-        { base = [ 12, 15 ]
+        { base = [ 1, 1.2 ]
         , interval = PerfectFifth
         }
 
 -}
 type alias Config =
-    { base : List Int
+    { base : List Float
     , interval : Interval
     }
 
 
-{-| Return the base value multiplied at a modular scale index. You'll probably want to create a helper function like this.
+{-| Return the value at a modular scale index multiplied by the base.
+
+    config =
+        { base = [ 1 ]
+        , interval = PerfectFifth
+        }
+
+    get config 5
+
+    --> 7.59375
+
+You'll probably want to create a helper function like this.
 
     ms : Int -> String
     ms x =
-        toString (ModularScale.get config x) ++ "px"
+        toString (get config x) ++ "em"
 
-    h1 [ style [ ( "font-size", ms 4 ) ] ] [ text "Foo" ]
+Which you'll use like this.
+
+    h1 [ style [ ( "font-size", ms 4 ) ] ][ text "Foo" ]
 
 -}
 get : Config -> Int -> Float
 get { base, interval } index =
     if List.length base == 1 then
-        base
-            |> List.head
-            |> Maybe.withDefault 0
-            |> (\x -> toFloat x * getEm interval index)
+        case base of
+            [ a ] ->
+                a * intervalToRatio interval ^ toFloat index
+
+            _ ->
+                0
     else
-        getRecursive index (intervalToRatio interval) (List.map toFloat base)
+        getRecursive index (intervalToRatio interval) base
 
 
 getRecursive : Int -> Float -> List Float -> Float
@@ -98,13 +111,6 @@ getRecursive index interval base =
                 List.map applyScale base
         in
         getRecursive (indexDirection index) interval updatedBase
-
-
-{-| Get the multiplication factor at a given index of the scale
--}
-getEm : Interval -> Int -> Float
-getEm interval index =
-    intervalToRatio interval ^ toFloat index
 
 
 {-| -}
