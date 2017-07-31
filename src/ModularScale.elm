@@ -13,6 +13,7 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 # Get a value
 
 @docs get
+
 @docs getEm
 
 
@@ -21,8 +22,6 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 @docs Interval
 
 -}
-
-import Array exposing (get)
 
 
 {-| Create the `config` for your scale. I recommend not using more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values will get too narrow.
@@ -55,22 +54,34 @@ get { base, interval } index =
         base
             |> List.head
             |> Maybe.withDefault 0
-            |> toFloat
-            |> (*) (getEm interval index)
+            |> (\x -> toFloat x * getEm interval index)
     else
+        getRecursive index (intervalToRatio interval) (List.map toFloat base)
+
+
+getRecursive : Int -> Float -> List Float -> Float
+getRecursive index interval base =
+    if index == -1 then
         base
-            |> List.map (\x -> List.map (\y -> toFloat x * getEm interval y) (List.range 0 index))
-            |> List.concat
-            |> List.sort
-            |> getIndex index
+            |> List.minimum
+            |> Maybe.withDefault 0
+    else
+        let
+            min =
+                base
+                    |> List.minimum
+                    |> Maybe.withDefault 0
 
+            applyScale x =
+                if x == min then
+                    x * interval
+                else
+                    x
 
-getIndex : Int -> List Float -> Float
-getIndex index list =
-    list
-        |> Array.fromList
-        |> Array.get index
-        |> Maybe.withDefault 0
+            updatedBase =
+                List.map applyScale base
+        in
+        getRecursive (index - 1) interval updatedBase
 
 
 {-| Get the multiplication factor at a given index of the scale

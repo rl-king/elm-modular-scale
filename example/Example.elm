@@ -30,7 +30,7 @@ model =
 
 config : ModularScale.Config
 config =
-    { base = [ 12, 15 ]
+    { base = [ 12, 17 ]
     , interval = PerfectFifth
     }
 
