@@ -21,6 +21,8 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 
 -}
 
+import List exposing (..)
+
 
 {-| Create the `config` for your scale. I recommend not using more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values might get too narrow.
 
@@ -61,56 +63,47 @@ Which you'll use like this.
 -}
 get : Config -> Int -> Float
 get { base, interval } index =
-    if List.length base == 1 then
-        case base of
-            [ a ] ->
-                a * intervalToRatio interval ^ toFloat index
+    case base of
+        [] ->
+            0
 
-            _ ->
-                0
-    else
-        getRecursive index (intervalToRatio interval) base
+        [ x ] ->
+            x * intervalToRatio interval ^ toFloat index
+
+        xs ->
+            getRecursive index (intervalToRatio interval) xs
 
 
 getRecursive : Int -> Float -> List Float -> Float
 getRecursive index interval base =
-    if index == 0 then
-        base
-            |> List.minimum
-            |> Maybe.withDefault 0
-    else
-        let
-            indexIsNegative =
-                index < 0
+    case index of
+        0 ->
+            base
+                |> List.minimum
+                |> Maybe.withDefault 0
 
-            target =
-                if indexIsNegative then
-                    base
-                        |> List.maximum
-                        |> Maybe.withDefault 0
-                else
-                    base
-                        |> List.minimum
-                        |> Maybe.withDefault 0
+        _ ->
+            let
+                ( target, updatedIndex, indexIsNegative ) =
+                    case index < 0 of
+                        True ->
+                            ( List.maximum base |> Maybe.withDefault 0, index + 1, True )
 
-            applyScale x =
-                if x == target && indexIsNegative then
-                    x / interval
-                else if x == target then
-                    x * interval
-                else
-                    x
+                        False ->
+                            ( List.minimum base |> Maybe.withDefault 0, index - 1, False )
 
-            indexDirection x =
-                if indexIsNegative then
-                    x + 1
-                else
-                    x - 1
+                applyScale x =
+                    if x == target && indexIsNegative then
+                        x / interval
+                    else if x == target then
+                        x * interval
+                    else
+                        x
 
-            updatedBase =
-                List.map applyScale base
-        in
-        getRecursive (indexDirection index) interval updatedBase
+                updatedBase =
+                    List.map applyScale base
+            in
+            getRecursive updatedIndex interval updatedBase
 
 
 {-| -}
