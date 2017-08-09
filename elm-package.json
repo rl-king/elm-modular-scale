@@ -1,5 +1,5 @@
 {
-    "version": "1.0.2",
+    "version": "1.0.3",
     "summary": "Generate proportionally related values to use as font-sizes, line-height, ect.",
     "repository": "https://github.com/rl-king/elm-modular-scale.git",
     "license": "BSD3",
