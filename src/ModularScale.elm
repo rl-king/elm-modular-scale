@@ -1,4 +1,9 @@
-module ModularScale exposing (Config, Interval(..), get)
+module ModularScale exposing
+    ( Config
+    , config
+    , get
+    , Interval(..)
+    )
 
 {-| A library for generating numerical values derived from musical intervals. This will get you proportionally related font-sizes, line-height, element dimensions, ect.
 
@@ -8,6 +13,7 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 # Configuration
 
 @docs Config
+@docs config
 
 
 # Get a value
@@ -21,30 +27,59 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 
 -}
 
+import Array exposing (Array)
 import List exposing (..)
 
 
-{-| Create the `config` for your scale. I recommend not using more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values might get too narrow.
+type Config
+    = Config
+        { negativeValues : Array Float
+        , positiveValues : Array Float
+        , base : List Float
+        , interval : Interval
+        }
+
+
+{-| Create the `config` for your scale. It's recommended to not use more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values might get too narrow.
 
     config : Config
     config =
-        { base = [ 1, 1.2 ]
-        , interval = PerfectFifth
-        }
+        ModularScale.config [ 1, 1.2 ] ModularScale.PerfectFifth
 
 -}
-type alias Config =
-    { base : List Float
-    , interval : Interval
-    }
+config : List Float -> Interval -> Config
+config base interval =
+    Config
+        { positiveValues =
+            Array.fromList <|
+                List.map (generate base interval) (List.range 0 100)
+        , negativeValues =
+            (Array.fromList << List.reverse) <|
+                List.map (generate base interval) (List.range -50 0)
+        , base = base
+        , interval = interval
+        }
+
+
+get : Config -> Int -> Float
+get (Config conf) index =
+    if index >= 0 && index < 51 then
+        Maybe.withDefault 0 <|
+            Array.get index conf.positiveValues
+
+    else if index < 0 && index > -51 then
+        Maybe.withDefault 0 <|
+            Array.get (negate index) conf.negativeValues
+
+    else
+        generate conf.base conf.interval index
 
 
 {-| Return the value at an index of the scale based on the provided base(s).
 
+    config : Config
     config =
-        { base = [ 1 ]
-        , interval = PerfectFifth
-        }
+        ModularScale.config [ 1 ] ModularScale.PerfectFifth
 
     get config 5
 
@@ -54,56 +89,36 @@ You'll probably want to create a helper function like this.
 
     ms : Int -> String
     ms x =
-        toString (get config x) ++ "em"
+        String.fromFloat (get config x) ++ "em"
 
 Which you'll use like this.
 
-    h1 [ style [ ( "font-size", ms 4 ) ] ][ text "Foo" ]
+    h1 [ style [ ( "font-size", ms 4 ) ] ] [ text "Foo" ]
+
+Or, if you're using elm-css
+
+    ms : Int -> Css.Rem
+    ms x =
+        rem (get config x)
+
+    style : List Style
+    style =
+        [ fontSize (ms 4) ]
 
 -}
-get : Config -> Int -> Float
-get { base, interval } index =
-    case base of
-        [] ->
-            0
+generate : List Float -> Interval -> Int -> Float
+generate base interval index =
+    let
+        ratio =
+            intervalToRatio interval
+    in
+    if index >= 0 then
+        (Maybe.withDefault 0 << List.head << List.drop index << List.sort) <|
+            List.concatMap (\i -> List.map (\x -> x * ratio ^ toFloat i) base) (List.range 0 index)
 
-        [ x ] ->
-            x * intervalToRatio interval ^ toFloat index
-
-        xs ->
-            getRecursive index (intervalToRatio interval) xs
-
-
-getRecursive : Int -> Float -> List Float -> Float
-getRecursive index interval base =
-    case index of
-        0 ->
-            base
-                |> List.minimum
-                |> Maybe.withDefault 0
-
-        _ ->
-            let
-                ( target, updatedIndex, indexIsNegative ) =
-                    case index < 0 of
-                        True ->
-                            ( List.maximum base |> Maybe.withDefault 0, index + 1, True )
-
-                        False ->
-                            ( List.minimum base |> Maybe.withDefault 0, index - 1, False )
-
-                applyScale x =
-                    if x == target && indexIsNegative then
-                        x / interval
-                    else if x == target then
-                        x * interval
-                    else
-                        x
-
-                updatedBase =
-                    List.map applyScale base
-            in
-            getRecursive updatedIndex interval updatedBase
+    else
+        (Maybe.withDefault 0 << List.head << List.drop index << List.sort) <|
+            List.concatMap (\i -> List.map (\x -> x * ratio ^ toFloat i) base) (List.range index 0)
 
 
 {-| -}

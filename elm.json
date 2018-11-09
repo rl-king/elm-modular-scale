@@ -1,0 +1,17 @@
+{
+    "type": "package",
+    "name": "rl-king/elm-modular-scale",
+    "summary": "Generate proportionally related values to use as font-sizes, line-height, ect.",
+    "license": "BSD-3-Clause",
+    "version": "1.0.3",
+    "exposed-modules": [
+        "ModularScale"
+    ],
+    "elm-version": "0.19.0 <= v < 0.20.0",
+    "dependencies": {
+        "elm/core": "1.0.0 <= v < 2.0.0"
+    },
+    "test-dependencies": {
+        "elm-explorations/test": "1.1.0 <= v < 2.0.0"
+    }
+}
