@@ -7,20 +7,27 @@ Based on the idea found at <a target="_blank" href="http://www.modularscale.com/
 ```elm
 config : Config
 config =
-    { base = [ 1 ]
-    , interval = PerfectFifth
-    }
+    config [ 1 ] PerfectFifth
 
-get : Config -> Int -> Float 
 get config 5
 
 --> 7.59375
 
 ms : Int -> String
 ms x =
-    toString (get config x) ++ "em"
+    String.fromFloat (get config x) ++ "em"
 
-h1 [ style [ ( "font-size", ms 4 ) ] ][ text "Foo" ]
+h1 [ style [ ( "font-size", ms 4 ) ] ] [ text "Foo" ]
+
+-- Or, if you're using elm-css
+
+ms : Int -> Css.Rem
+ms x =
+    rem (get config x)
+
+style : List Style
+style =
+    [ fontSize (ms 4) ]
 ```
 Check the <a href="http://package.elm-lang.org/packages/rl-king/elm-modular-scale/latest/ModularScale">docs</a> for more information.
 
