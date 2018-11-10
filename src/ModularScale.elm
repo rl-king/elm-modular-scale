@@ -5,9 +5,9 @@ module ModularScale exposing
     , Interval(..)
     )
 
-{-| A library for generating numerical values derived from musical intervals. This will get you proportionally related font-sizes, line-height, element dimensions, ect.
+{-| Generating numerical values derived from musical intervals. Use this to generate proportionally related font-sizes, line-height, element dimensions, ect.
 
-Based on the idea found at <a target="_blank" href="http://www.modularscale.com/">modularscale.com</a>.
+Based on the idea found at [http://www.modularscale.com/](modularscale.com).
 
 
 # Configuration
@@ -31,6 +31,8 @@ import Array exposing (Array)
 import List exposing (..)
 
 
+{-| Stores the base(s) and `Interval`
+-}
 type Config
     = Config
         { negativeValues : Array Float
@@ -40,7 +42,7 @@ type Config
         }
 
 
-{-| Create the `config` for your scale. It's recommended to not use more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values might get too narrow.
+{-| Create the `Config` for your scale. It's recommended to not use more than two base values, and often one is enough. Using more values dilutes the scale too much and the range of generated values might get too narrow.
 
     config : Config
     config =
@@ -50,29 +52,11 @@ type Config
 config : List Float -> Interval -> Config
 config base interval =
     Config
-        { positiveValues =
-            Array.fromList <|
-                List.map (generate base interval) (List.range 0 100)
-        , negativeValues =
-            (Array.fromList << List.reverse) <|
-                List.map (generate base interval) (List.range -50 0)
+        { positiveValues = generate base interval 50
+        , negativeValues = generate base interval -50
         , base = base
         , interval = interval
         }
-
-
-get : Config -> Int -> Float
-get (Config conf) index =
-    if index >= 0 && index < 51 then
-        Maybe.withDefault 0 <|
-            Array.get index conf.positiveValues
-
-    else if index < 0 && index > -51 then
-        Maybe.withDefault 0 <|
-            Array.get (negate index) conf.negativeValues
-
-    else
-        generate conf.base conf.interval index
 
 
 {-| Return the value at an index of the scale based on the provided base(s).
@@ -99,26 +83,42 @@ Or, if you're using elm-css
 
     ms : Int -> Css.Rem
     ms x =
-        rem (get config x)
+        \divisor -> remainderBy divisor (get config x)
 
     style : List Style
     style =
         [ fontSize (ms 4) ]
 
 -}
-generate : List Float -> Interval -> Int -> Float
+get : Config -> Int -> Float
+get (Config conf) index =
+    Maybe.withDefault 0 <|
+        if index >= 0 && index <= 50 then
+            Array.get index conf.positiveValues
+
+        else if index < 0 && index >= -50 then
+            Array.get (abs index) conf.negativeValues
+
+        else
+            Array.get (abs index) <|
+                generate conf.base conf.interval index
+
+
+generate : List Float -> Interval -> Int -> Array Float
 generate base interval index =
     let
         ratio =
             intervalToRatio interval
     in
     if index >= 0 then
-        (Maybe.withDefault 0 << List.head << List.drop index << List.sort) <|
-            List.concatMap (\i -> List.map (\x -> x * ratio ^ toFloat i) base) (List.range 0 index)
+        (Array.fromList << List.sort) <|
+            List.foldr (\i acc -> List.map (\b -> b * ratio ^ toFloat i) base ++ acc) [] <|
+                List.range 0 index
 
     else
-        (Maybe.withDefault 0 << List.head << List.drop index << List.sort) <|
-            List.concatMap (\i -> List.map (\x -> x * ratio ^ toFloat i) base) (List.range index 0)
+        (Array.fromList << List.drop (List.length base - 1) << List.reverse << List.sort) <|
+            List.foldr (\i acc -> List.map (\b -> b * ratio ^ toFloat i) base ++ acc) [] <|
+                List.range index 0
 
 
 {-| -}
