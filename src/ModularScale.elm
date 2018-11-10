@@ -82,8 +82,8 @@ Which you'll use like this.
 Or, if you're using elm-css
 
     ms : Int -> Css.Rem
-    ms x =
-        \divisor -> remainderBy divisor (get config x)
+    ms index =
+        rem (get config index)
 
     style : List Style
     style =
