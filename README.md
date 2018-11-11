@@ -1,6 +1,9 @@
 #  elm-modular-scale
 Create proportionally related values to be used as font sizes, element widths, line height, ect.
 
+[example live](https://rl-king.github.io/elm-modular-scale-example/) |
+[example code](https://github.com/rl-king/elm-modular-scale-example)
+
 Based on the idea found at [modularscale.com](http://www.modularscale.com/)
 
 ## Usage
